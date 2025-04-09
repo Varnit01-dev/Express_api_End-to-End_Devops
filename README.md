@@ -45,9 +45,9 @@ This repository contains the implementation of a Dockerized Express.js API with 
        - Login to Docker Hub: `docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD`.
        - Tag image: `docker tag peerhire-api $DOCKER_USERNAME/peerhire-api:latest`.
        - Push: `docker push $DOCKER_USERNAME/peerhire-api:latest`.
-       - (Note: Replace with AWS ECR steps if using AWS—requires AWS CLI and credentials.)
+         
     4. **Deploy to Cloud**:
-       - Example: Push to an EC2 instance or Kubernetes cluster (see Cloud Deployment below).
+       - Example: Push to an EC2 instance .
   - Secrets (e.g., `DOCKER_USERNAME`, `DOCKER_PASSWORD`) stored in GitHub Secrets.
 
 ---
