@@ -1,0 +1,12 @@
+---
+- hosts: ec2
+  become: yes
+  tasks:
+    - name: Rollback to latest stable image
+      docker_container:
+        name: peerhire-api
+        image: "560149702182.dkr.ecr.us-east-1.amazonaws.com/peerhire-api:latest"
+        state: started
+        restart_policy: always
+        ports:
+          - "3000:3000"
