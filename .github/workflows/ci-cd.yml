@@ -10,81 +10,66 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
 
-      - name: Install dependencies
-        run: npm install
+    - name: Install dependencies
+      run: npm install
 
-<<<<<<< HEAD
-      - name: Run unit tests (Jest)
-        run: npm test
-=======
     - name: Install test dependencies
       run: npm install --save-dev jest supertest
 
     - name: Run unit tests (Jest)
       run: npm test || exit 1
->>>>>>> 721ada7 (Fix: updated CI/CD pipeline and added Ansible playbooks)
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
 
-      - name: Log in to AWS ECR
-        run: |
-          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 560149702182.dkr.ecr.us-east-1.amazonaws.com
+    - name: Log in to AWS ECR
+      run: |
+        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 560149702182.dkr.ecr.us-east-1.amazonaws.com
 
-      - name: Build and tag Docker image
-        run: |
-          docker build -t 560149702182.dkr.ecr.us-east-1.amazonaws.com/peerhire-api:${{ github.sha }} .
-          docker tag 560149702182.dkr.ecr.us-east-1.amazonaws.com/peerhire-api:${{ github.sha }} 560149702182.dkr.ecr.us-east-1.amazonaws.com/peerhire-api:latest
+    - name: Build and tag Docker image
+      run: |
+        docker build -t 560149702182.dkr.ecr.us-east-1.amazonaws.com/peerhire-api:${{ github.sha }} .
+        docker tag 560149702182.dkr.ecr.us-east-1.amazonaws.com/peerhire-api:${{ github.sha }} 560149702182.dkr.ecr.us-east-1.amazonaws.com/peerhire-api:latest
 
-      - name: Push Docker image to ECR
-        run: |
-          docker push 560149702182.dkr.ecr.us-east-1.amazonaws.com/peerhire-api:${{ github.sha }}
-          docker push 560149702182.dkr.ecr.us-east-1.amazonaws.com/peerhire-api:latest
+    - name: Push Docker image
+      run: |
+        docker push 560149702182.dkr.ecr.us-east-1.amazonaws.com/peerhire-api:${{ github.sha }}
+        docker push 560149702182.dkr.ecr.us-east-1.amazonaws.com/peerhire-api:latest
 
-<<<<<<< HEAD
-      - name: Deploy to AWS EC2 with Ansible
-        if: success()
-        run: |
-          sudo apt-get update && sudo apt-get install -y ansible
-          echo "${{ secrets.EC2_SSH_KEY }}" > peerhire.pem
-          chmod 400 peerhire.pem
-          ansible-playbook -i ansible/inventory.yml ansible/deploy.yml --private-key peerhire.pem --extra-vars "image_tag=${{ github.sha }}"
+    - name: Disable SSH strict host key checking
+      run: |
+        mkdir -p ~/.ssh
+        echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
 
-      - name: Rollback on failure
-        if: failure()
-        run: |
-          echo "Deployment failed, rolling back to previous image"
-          echo "${{ secrets.EC2_SSH_KEY }}" > peerhire.pem
-          chmod 400 peerhire.pem
-          ansible-playbook -i ansible/inventory.yml ansible/rollback.yml --private-key peerhire.pem
-
-=======
     - name: Deploy to AWS EC2 with Ansible
+      if: success()
       run: |
         sudo apt-get update && sudo apt-get install -y ansible
         echo "${{ secrets.EC2_SSH_KEY }}" > peerhire.pem
         chmod 400 peerhire.pem
         ansible-playbook -i ansible/inventory.yml ansible/deploy.yml --private-key peerhire.pem --extra-vars "image_tag=${{ github.sha }}"
-      if: success()
 
     - name: Rollback on failure
       if: failure()
       run: |
         echo "Deployment failed, rolling back to previous image"
+        mkdir -p ~/.ssh
+        echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+        echo "${{ secrets.EC2_SSH_KEY }}" > peerhire.pem
+        chmod 400 peerhire.pem
         ansible-playbook -i ansible/inventory.yml ansible/rollback.yml --private-key peerhire.pem
->>>>>>> 721ada7 (Fix: updated CI/CD pipeline and added Ansible playbooks)
