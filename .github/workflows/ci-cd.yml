@@ -21,8 +21,16 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+<<<<<<< HEAD
       - name: Run unit tests (Jest)
         run: npm test
+=======
+    - name: Install test dependencies
+      run: npm install --save-dev jest supertest
+
+    - name: Run unit tests (Jest)
+      run: npm test || exit 1
+>>>>>>> 721ada7 (Fix: updated CI/CD pipeline and added Ansible playbooks)
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -48,6 +56,7 @@ jobs:
           docker push 560149702182.dkr.ecr.us-east-1.amazonaws.com/peerhire-api:${{ github.sha }}
           docker push 560149702182.dkr.ecr.us-east-1.amazonaws.com/peerhire-api:latest
 
+<<<<<<< HEAD
       - name: Deploy to AWS EC2 with Ansible
         if: success()
         run: |
@@ -64,3 +73,18 @@ jobs:
           chmod 400 peerhire.pem
           ansible-playbook -i ansible/inventory.yml ansible/rollback.yml --private-key peerhire.pem
 
+=======
+    - name: Deploy to AWS EC2 with Ansible
+      run: |
+        sudo apt-get update && sudo apt-get install -y ansible
+        echo "${{ secrets.EC2_SSH_KEY }}" > peerhire.pem
+        chmod 400 peerhire.pem
+        ansible-playbook -i ansible/inventory.yml ansible/deploy.yml --private-key peerhire.pem --extra-vars "image_tag=${{ github.sha }}"
+      if: success()
+
+    - name: Rollback on failure
+      if: failure()
+      run: |
+        echo "Deployment failed, rolling back to previous image"
+        ansible-playbook -i ansible/inventory.yml ansible/rollback.yml --private-key peerhire.pem
+>>>>>>> 721ada7 (Fix: updated CI/CD pipeline and added Ansible playbooks)

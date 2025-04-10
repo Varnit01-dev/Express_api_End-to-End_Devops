@@ -24,6 +24,11 @@ app.get('/', (req, res) => {
   res.send('Hello from PeerHire API!');
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+
+if (require.main === module) {
+  const server = app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+module.exports = app; 

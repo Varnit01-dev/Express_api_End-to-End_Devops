@@ -4,4 +4,3 @@ services:
     image: 560149702182.dkr.ecr.us-east-1.amazonaws.com/peerhire-api:latest
     ports:
       - "3000:3000"
-
