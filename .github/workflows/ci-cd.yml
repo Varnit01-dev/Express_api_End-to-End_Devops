@@ -60,9 +60,9 @@ jobs:
       if: success()
       run: |
         sudo apt-get update && sudo apt-get install -y ansible
-        echo "${{ secrets.EC2_SSH_KEY }}" > peerhire.pem
-        chmod 400 peerhire.pem
-        ansible-playbook -i ansible/inventory.yml ansible/deploy.yml --private-key peerhire.pem --extra-vars "image_tag=${{ github.sha }}"
+        echo "${{ secrets.EC2_SSH_KEY }}" > /tmp/peerhire.pem
+        chmod 600 /tmp/peerhire.pem
+        ansible-playbook -i ansible/inventory.yml ansible/deploy.yml --private-key /tmp/peerhire.pem --extra-vars "image_tag=${{ github.sha }}"
 
     - name: Rollback on failure
       if: failure()
@@ -70,6 +70,6 @@ jobs:
         echo "Deployment failed, rolling back to previous image"
         mkdir -p ~/.ssh
         echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-        echo "${{ secrets.EC2_SSH_KEY }}" > peerhire.pem
-        chmod 400 peerhire.pem
-        ansible-playbook -i ansible/inventory.yml ansible/rollback.yml --private-key peerhire.pem
+        echo "${{ secrets.EC2_SSH_KEY }}" > /tmp/peerhire.pem
+        chmod 600 /tmp/peerhire.pem
+        ansible-playbook -i ansible/inventory.yml ansible/rollback.yml --private-key /tmp/peerhire.pem
