@@ -1,6 +1,30 @@
-version: '3.8'
+version: '3'
+
 services:
-  api:
-    image: 560149702182.dkr.ecr.us-east-1.amazonaws.com/peerhire-api:latest
+  app:
+    image: <your-ecr-image-url>:latest
+    container_name: app
     ports:
       - "3000:3000"
+    restart: always
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    restart: always
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    restart: always
+
+volumes:
+  grafana-data:
