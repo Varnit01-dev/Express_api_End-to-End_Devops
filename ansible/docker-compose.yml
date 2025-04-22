@@ -2,7 +2,8 @@ version: '3'
 
 services:
   app:
-    image: <your-ecr-image-url>:latest
+    image: 560149702182.dkr.ecr.us-east-1.amazonaws.com/peerhire-api:latest
+
     container_name: app
     ports:
       - "3000:3000"
