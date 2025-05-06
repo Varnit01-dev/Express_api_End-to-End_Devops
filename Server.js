@@ -21,7 +21,7 @@ const specs = swaggerJsdoc(options);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 app.get('/', (req, res) => {
-  res.send('Hello from PeerHire API!');
+  res.send('Hello, I am looking for Devops Opportunies!');
 });
 
 
