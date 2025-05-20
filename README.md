@@ -1,8 +1,7 @@
-# Devops_Assignment
+# Express_api_End_to_End_Devops
 
-This repository contains the implementation of a Dockerized Express.js API with Swagger documentation, along with a CI/CD pipeline setup, cloud deployment options, and bonus features for a DevOps internship assignment.
+This project demonstrates an end-to-end DevOps pipeline for a Dockerized Express.js API with Swagger documentation, GitHub Actions CI/CD, and AWS cloud deployment (via EC2 and Kubernetes).
 
-## Steps to Complete the Assignment
 
 ### Dockerization & CI/CD Setup
 
